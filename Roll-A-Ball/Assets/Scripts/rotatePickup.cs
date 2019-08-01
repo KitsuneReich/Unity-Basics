@@ -59,4 +59,9 @@ public class rotatePickup : MonoBehaviour
 
 
     }
+
+    private void OnDisable()
+    {
+        print("Disabling!");
+    }
 }
