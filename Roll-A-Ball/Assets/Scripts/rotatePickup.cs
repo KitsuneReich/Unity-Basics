@@ -31,5 +31,32 @@ public class rotatePickup : MonoBehaviour
             transform.position += new Vector3(0, displacement, 0);
             bobbingCounter += 0.03f;
         }
+
+        // consolidate spectral data to 10 partitions (1 partition for each rotating cube)
+        int numPartitions = 10;
+        float[] aveMag = new float[numPartitions];
+        //The index of the pickup child currently accessing the script
+        int pickupIndex = transform.GetSiblingIndex();
+
+        for (int i = 0; i < 10; i++) {
+            //add up 10 bins each from spectral data for each pickup
+            aveMag[pickupIndex] += audioSplitter.spectrumData[((10 * pickupIndex) + i)];
+            }
+
+        // scale and bound the average magnitude.
+        for (int i = 0; i < numPartitions; i++)
+        {
+            aveMag[i] = (float)0.5 + aveMag[i] * 5;
+            if (aveMag[i] > 5)
+            {
+                aveMag[i] = 5;
+            }
+        }
+
+        // Map the magnitude to the pickups to transform scale
+        float lerpValue = Mathf.Lerp(transform.localScale.x, aveMag[pickupIndex], 0.5f);
+        transform.localScale = new Vector3(lerpValue, lerpValue, lerpValue);
+
+
     }
 }
